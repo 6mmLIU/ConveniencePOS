@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>支付成功</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 20px 40px;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #28a745;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+    }
+
+    li {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    li span {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2 th:text="${message}">支付成功！</h2>
+  <p>支付信息：</p>
+  <ul>
+    <li>支付 ID: <span th:text="${payment.id}">12345</span></li>
+    <li>支付金额: <span th:text="${payment.amount}">100.00</span> 元</li>
+    <li>支付方式: <span th:text="${payment.method}">微信支付</span></li>
+    <!-- 使用空值检查，避免 NullPointerException -->
+    <li>支付时间:
+      <span th:if="${payment.paymentTime != null}"
+            th:text="${#temporals.format(payment.paymentTime, 'yyyy-MM-dd HH:mm:ss')}">
+        2025-01-07 20:00:00
+      </span>
+      <span th:if="${payment.paymentTime == null}">无</span>
+    </li>
+    <li>Sale ID: <span th:text="${payment.saleId}">67890</span></li>
+  </ul>
+  <button class="button" onclick="window.location.href='/shop'">返回商品页面</button>
+  <div class="footer">
+    感谢您的支付，祝您生活愉快！
+  </div>
+</div>
+</body>
+</html>

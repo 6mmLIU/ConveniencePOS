@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>库存预警</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #FF9800;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+        .replenish-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .download-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h2>库存预警列表</h2>
+
+<!-- 库存预警商品列表 -->
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>商品名称</th>
+        <th>当前库存</th>
+        <th>安全库存</th>
+        <th>补货操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${lowStockProducts}">
+        <td th:text="${product.id}"></td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.stock}"></td>
+        <td th:text="${product.safeStock}"></td>
+        <td>
+            <!-- 补货按钮：增加库存10 -->
+            <form th:action="@{/products/updateStock}" method="post" style="display: inline;">
+                <input type="hidden" name="productId" th:value="${product.id}" />
+                <input type="hidden" name="change" value="10" />
+                <button type="submit" class="replenish-btn">补货 +10</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 导出库存报表按钮 -->
+<form th:action="@{/products/export}" method="get">
+    <button type="submit" class="download-btn">导出库存报表</button>
+</form>
+</body>
+</html>

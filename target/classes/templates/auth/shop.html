@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品销售页面</title>
+    <style>
+        :root {
+            --primary-color: #4ab899;
+            --primary-hover: #3c9e82;
+            --secondary-color: #f4f4f4;
+            --text-color: #333333;
+            --border-radius: 8px;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --button-color: #28a745;
+            --button-hover: #218838;
+            --disabled-color: #ccc;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('/images/background1.jpg'); /* 设置背景图片 */
+            background-size: cover; /* 背景图片覆盖整个页面 */
+            background-position: center; /* 居中显示背景图片 */
+            background-repeat: no-repeat; /* 防止背景图片重复 */
+            font-family: var(--font-family);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 1200px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .button {
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .button-disabled {
+            background-color: var(--disabled-color);
+            cursor: not-allowed;
+        }
+
+        .button-disabled:hover {
+            background-color: var(--disabled-color);
+            transform: none;
+        }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-container button {
+            width: 35px;
+            height: 35px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: var(--border-radius);
+            margin: 0 5px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .quantity-container button:hover:not(:disabled) {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .quantity-container button:disabled {
+            background-color: var(--disabled-color);
+            cursor: not-allowed;
+        }
+
+        .quantity-container input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            height: 35px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .quantity-container input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        @media (max-width: 768px) {
+            table, th, td {
+                font-size: 14px;
+            }
+
+            .button, .quantity-container button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            .quantity-container input {
+                width: 50px;
+                height: 30px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>商品销售页面</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>商品名称</th>
+        <th>分类</th>
+        <th>价格 (元)</th>
+        <th>库存</th>
+        <th>购买数量</th>
+        <th>应付金额 (元)</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.name}">商品名称</td>
+        <td th:text="${product.category}">分类</td>
+        <td th:text="${product.price}" class="price">0.00</td>
+        <td th:text="${product.stock}">0</td>
+        <td>
+            <div class="quantity-container">
+                <button type="button" class="decrement-button" th:disabled="${product.stock == 0}">-</button>
+                <input type="number" class="quantity-input" name="quantity" th:value="1" min="1" th:max="${product.stock}" />
+                <button type="button" class="increment-button" th:disabled="${product.stock == 0}">+</button>
+            </div>
+        </td>
+        <td>
+            <span class="total-price" th:text="${product.price}">0.00</span>
+        </td>
+        <td>
+            <form th:action="@{/payments/new}" method="get" class="payment-form">
+                <input type="hidden" name="productId" th:value="${product.id}" />
+                <input type="hidden" name="quantity" class="hidden-quantity" th:value="1" />
+                <input type="hidden" name="totalPrice" class="hidden-totalPrice" th:value="${product.price}" />
+                <button type="submit" class="button" th:classappend="${product.stock == 0} ? ' button-disabled' : ''" th:disabled="${product.stock == 0}">支付</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('tbody').addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.classList.contains('decrement-button') || target.classList.contains('increment-button')) {
+                const row = target.closest('tr');
+                const quantityInput = row.querySelector('.quantity-input');
+                const totalPriceElement = row.querySelector('.total-price');
+                const hiddenQuantity = row.querySelector('.hidden-quantity');
+                const hiddenTotalPrice = row.querySelector('.hidden-totalPrice');
+                const priceElement = row.querySelector('.price');
+
+                let price = parseFloat(priceElement.innerText);
+                let quantity = parseInt(quantityInput.value, 10);
+                const max = parseInt(quantityInput.getAttribute('max'), 10);
+                const min = parseInt(quantityInput.getAttribute('min'), 10);
+
+                if (target.classList.contains('increment-button')) {
+                    if (quantity < max) {
+                        quantity++;
+                        quantityInput.value = quantity;
+                    }
+                } else if (target.classList.contains('decrement-button')) {
+                    if (quantity > min) {
+                        quantity--;
+                        quantityInput.value = quantity;
+                    }
+                }
+
+                const total = price * quantity;
+                totalPriceElement.innerText = total.toFixed(2);
+                hiddenQuantity.value = quantity;
+                hiddenTotalPrice.value = total.toFixed(2);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

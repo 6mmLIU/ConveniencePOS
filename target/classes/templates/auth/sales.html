@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>销售统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1, h3 { text-align: center; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        form { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .error-message { color: red; text-align: center; }
+        button { padding: 5px 15px; cursor: pointer; background-color: #007bff; color: white; border: none; }
+        button:hover { background-color: #0056b3; }
+        #salesChart, #timeChart { width: 80%; height: 400px; margin: 0 auto; }
+        nav { text-align: center; margin: 10px 0; }
+        nav button { margin: 5px; }
+    </style>
+</head>
+<body>
+<h1>销售统计页面</h1>
+
+<nav>
+    <a th:href="@{/products}"><button>商品管理</button></a>
+    <a th:href="@{/members}"><button>会员管理</button></a>
+    <a th:href="@{/logout}"><button>退出登录</button></a>
+</nav>
+
+<!-- 如果有错误信息，则显示 -->
+<div th:if="${error}" class="error-message" th:text="${error}">错误信息</div>
+
+<h3>按分类统计销售数据</h3>
+<table>
+    <thead>
+    <tr>
+        <th>商品分类</th>
+        <th>总销售额 (元)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${salesByCategory}">
+        <td th:text="${entry.key}">分类名称</td>
+        <td th:text="${entry.value != null ? #numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'DEFAULT') : '0.00'}">0.00</td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>分类销售可视化图表</h3>
+<div id="salesChart"></div>
+
+<h3>按时间范围统计销售总额</h3>
+<form th:action="@{/sales/time}" method="post">
+    <label>开始时间：<input type="datetime-local" name="startTime" required /></label>
+    <label>结束时间：<input type="datetime-local" name="endTime" required /></label>
+    <button type="submit">查询</button>
+</form>
+
+<div th:if="${totalSales != null}">
+    <h3>总销售额：
+        <span th:text="${#numbers.formatDecimal(totalSales, 1, 'POINT', 2, 'DEFAULT')}">
+            0.00
+        </span> 元
+    </h3>
+</div>
+<div id="timeChart" th:if="${totalSales != null}"></div>
+
+<script th:inline="javascript">
+    let salesData = /*[[${salesByCategory != null ? salesByCategory : '{}'}]]*/ {};
+    console.log('销售数据:', salesData); // 调试输出
+
+    let categories = Object.keys(salesData);
+    let salesValues = Object.values(salesData);
+
+    // 如果没有分类数据，设置默认值
+    if (categories.length === 0) {
+        categories = ['无数据'];
+        salesValues = [0];
+    }
+
+    let salesChart = echarts.init(document.getElementById('salesChart'));
+    salesChart.setOption({
+        title: { text: '分类销售统计', left: 'center' },
+        tooltip: { trigger: 'item' },
+        legend: { orient: 'vertical', left: 'left' },
+        series: [{
+            name: '销售额',
+            type: 'pie',
+            radius: '50%',
+            data: categories.map((category, index) => ({
+                name: category,
+                value: salesValues[index] || 0 // 确保有默认值
+            })),
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    });
+</script>
+</body>
+</html>

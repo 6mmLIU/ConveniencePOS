@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <!-- 引入 ECharts 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+        .action-btn {
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            margin: 2px;
+            border-radius: 4px;
+        }
+        .edit-btn { background-color: #2196F3; }
+        .delete-btn { background-color: #F44336; }
+        .increase-btn { background-color: #4CAF50; }
+        .decrease-btn { background-color: #FF9800; }
+        .add-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .export-btn, .low-stock-btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+        form {
+            text-align: center;
+            margin: 20px;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #chart {
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+<h2>商品管理页面</h2>
+
+<!-- 跳转到低库存预警页面的按钮 -->
+<a th:href="@{/products/lowStock}" class="low-stock-btn">查看低库存预警</a>
+
+<!-- 可视化图表区域 -->
+<div id="chart"></div>
+
+<!-- 商品列表展示 -->
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>商品名称</th>
+        <th>价格</th>
+        <th>库存</th>
+        <th>分类</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.id}"></td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.price}"></td>
+        <td th:text="${product.stock}"></td>
+        <td th:text="${product.category}"></td>
+        <td>
+            <!-- 编辑按钮 -->
+            <a th:href="@{'/products/edit/' + ${product.id}}">
+                <button type="button" class="action-btn edit-btn">编辑</button>
+            </a>
+            <!-- 删除按钮 -->
+            <a th:href="@{'/products/delete/' + ${product.id}}">
+                <button type="button" class="action-btn delete-btn">删除</button>
+            </a>
+            <!-- 增加库存 -->
+            <form th:action="@{/products/updateStock}" method="post" style="display: inline;">
+                <input type="hidden" name="productId" th:value="${product.id}" />
+                <input type="hidden" name="change" value="10" />
+                <button type="submit" class="action-btn increase-btn">+10</button>
+            </form>
+            <!-- 减少库存 -->
+            <form th:action="@{/products/updateStock}" method="post" style="display: inline;">
+                <input type="hidden" name="productId" th:value="${product.id}" />
+                <input type="hidden" name="change" value="-10" />
+                <button type="submit" class="action-btn decrease-btn">-10</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 添加新商品表单 -->
+<form th:action="@{/products/add}" method="post">
+    <input type="text" name="name" placeholder="商品名称" required />
+    <input type="number" name="price" placeholder="价格" step="0.01" required />
+    <input type="number" name="stock" placeholder="库存" required />
+    <input type="text" name="category" placeholder="分类" required />
+    <button type="submit" class="add-btn">添加商品</button>
+</form>
+
+<!-- 导出商品报表按钮 -->
+<form th:action="@{/products/export}" method="get">
+    <button type="submit" class="export-btn">导出商品报表</button>
+</form>
+
+<!-- ECharts 图表初始化 -->
+<script th:inline="javascript">
+    /* 获取商品数据 */
+    const productData = [[${products}]];
+
+    // 解析商品名称和库存数据
+    const names = [];
+    const stocks = [];
+    productData.forEach(product => {
+        names.push(product.name);
+        stocks.push(product.stock);
+    });
+
+    // 初始化 ECharts 图表
+    const chart = echarts.init(document.getElementById('chart'));
+    const option = {
+        title: {
+            text: '商品库存情况',
+            left: 'center'
+        },
+        xAxis: {
+            type: 'category',
+            data: names
+        },
+        yAxis: {
+            type: 'value',
+            name: '库存数量'
+        },
+        series: [{
+            data: stocks,
+            type: 'bar',
+            itemStyle: {
+                color: '#4CAF50'
+            }
+        }]
+    };
+    chart.setOption(option);
+</script>
+</body>
+</html>

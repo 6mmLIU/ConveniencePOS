@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑商品</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        form {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: left;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 5px;
+            width: 100%;
+        }
+        button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h2>编辑商品</h2>
+
+<!-- 编辑商品表单 -->
+<form th:action="@{/products/update}" method="post">
+    <input type="hidden" name="id" th:value="${product.id}" />
+    <label>商品名称：</label>
+    <label>
+        <input type="text" name="name" th:value="${product.name}" required />
+    </label>
+    <label>价格：</label>
+    <label>
+        <input type="number" name="price" th:value="${product.price}" step="0.01" required />
+    </label>
+    <label>库存：</label>
+    <label>
+        <input type="number" name="stock" th:value="${product.stock}" required />
+    </label>
+    <label>分类：</label>
+    <label>
+        <input type="text" name="category" th:value="${product.category}" required />
+    </label>
+    <button type="submit">保存修改</button>
+</form>
+
+<a th:href="@{/products}">返回商品列表</a>
+</body>
+</html>
