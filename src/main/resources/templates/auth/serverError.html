@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>服务器错误</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 50px;
+            color: #d9534f;
+        }
+        p {
+            font-size: 20px;
+            color: #5a5a5a;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h1>500 - 服务器错误</h1>
+<p>抱歉，服务器出了一些问题，请稍后再试。</p>
+<p>如果问题仍然存在，请联系系统管理员。</p>
+<a th:href="@{/}">返回首页</a>
+</body>
+</html>

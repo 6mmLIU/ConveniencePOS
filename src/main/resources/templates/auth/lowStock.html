@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>库存预警</title>
+    <style>
+        :root {
+            --primary-color: #4ab899;
+            --secondary-color: #f4f4f4;
+            --text-color: #333;
+            --border-color: #ddd;
+            --hover-color: #e2f4f0;
+            --danger-color: #ff5c5c;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --border-radius: 8px;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: var(--hover-color);
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        td.low-stock {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        a {
+            display: inline-block;
+            margin: 20px;
+            text-decoration: none;
+            color: white;
+            background-color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        a:hover {
+            background-color: #3c9e82;
+        }
+    </style>
+</head>
+<body>
+<h2>库存预警列表</h2>
+
+<!-- 低库存商品列表 -->
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>商品名称</th>
+        <th>当前库存</th>
+        <th>安全库存</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${lowStockProducts}">
+        <td th:text="${product.id}"></td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.stock}" th:classappend="${product.stock < product.safeStock} ? 'low-stock' : ''"></td>
+        <td th:text="${product.safeStock}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/products}">返回商品列表</a>
+</body>
+</html>

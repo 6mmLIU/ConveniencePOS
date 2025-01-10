@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>便利店销售系统 - 登录</title>
+    <style>
+        /* 页面整体样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 容器样式 */
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        /* 标题样式 */
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        /* 输入框样式 */
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* 按钮样式 */
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 错误或提示消息 */
+        .error, .logout {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .logout {
+            color: green;
+        }
+
+        /* 注册链接 */
+        .register-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .register-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 主标题 -->
+    <h1>便利店销售系统</h1>
+    <!-- 登录标题 -->
+    <h2>用户登录</h2>
+    <!-- 登录表单 -->
+    <form th:action="@{/perform_login}" method="post">
+        <div>
+            <input type="text" name="username" placeholder="请输入用户名" required />
+        </div>
+        <div>
+            <input type="password" name="password" placeholder="请输入密码" required />
+        </div>
+        <button type="submit">登录</button>
+    </form>
+    <!-- 错误和退出提示 -->
+    <div th:if="${param.error}" class="error">
+        <p>用户名或密码错误！</p>
+    </div>
+    <div th:if="${param.logout}" class="logout">
+        <p>您已成功退出！</p>
+    </div>
+    <!-- 注册链接 -->
+    <div class="register-link">
+        <p>没有账号？<a th:href="@{/register}">注册一个吧！</a></p>
+    </div>
+</div>
+</body>
+</html>
